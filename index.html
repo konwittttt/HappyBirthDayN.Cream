@@ -3,366 +3,251 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>For Cream 💖</title>
+<title>Happy Birthday My Love</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;500;700&display=swap" rel="stylesheet">
 
 <style>
-*{box-sizing:border-box}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Prompt',sans-serif}
 body{
-  margin:0;
-  background:black;
-  color:white;
-  font-family:sans-serif;
-  text-align:center;
-  overflow:hidden;
+background:linear-gradient(135deg,#ff4e88,#ff9eb5);
+height:100vh;
+overflow:hidden;
+color:white;
+display:flex;
+justify-content:center;
+align-items:center;
+text-align:center;
 }
-.screen{
-  position:absolute;
-  inset:0;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  flex-direction:column;
-  padding:20px;
+
+/* PASSWORD */
+#lockScreen{
+position:absolute;
+width:100%;
+height:100%;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+gap:20px;
+background:linear-gradient(135deg,#ff4e88,#ff9eb5);
+z-index:10;
 }
+
 input{
-  padding:12px;
-  font-size:18px;
-  border-radius:12px;
-  border:none;
-  text-align:center;
+padding:12px;
+border:none;
+border-radius:12px;
+font-size:18px;
+text-align:center;
 }
+
 button{
-  margin-top:15px;
-  padding:10px 25px;
-  font-size:16px;
-  border:none;
-  border-radius:25px;
-  background:pink;
-  cursor:pointer;
-}
-#intro,#game,#gallery,#letter,#endScreen{display:none}
-
-img{
-  max-width:90%;
-  max-height:60vh;
-  border-radius:20px;
-  box-shadow:0 0 30px pink;
-  transition:opacity 1s ease-in-out, transform 1s ease-in-out;
-}
-.fade-out{opacity:0; transform:scale(.97);}
-.fade-in{opacity:1; transform:scale(1);}
-
-.text{
-  margin-top:15px;
-  font-size:18px;
-  max-width:600px;
-  transition:opacity 1s;
+padding:10px 25px;
+border:none;
+border-radius:20px;
+background:white;
+color:#ff4e88;
+font-weight:bold;
+cursor:pointer;
 }
 
-#progressBar{
-  width:80%;
-  height:6px;
-  background:#333;
-  border-radius:10px;
-  margin-top:10px;
-}
-#progress{
-  height:100%;
-  width:0;
-  background:pink;
-  border-radius:10px;
-  transition:width .5s;
-}
-
-.star{
-  position:absolute;
-  width:2px;
-  height:2px;
-  background:white;
-  opacity:.8;
+/* GAME */
+#game{
+display:none;
+flex-direction:column;
+gap:20px;
 }
 
 .heart{
-  position:absolute;
-  color:pink;
-  animation:float 4s linear forwards;
+font-size:40px;
+cursor:pointer;
+transition:.3s;
 }
-@keyframes float{
-  from{transform:translateY(0);opacity:1}
-  to{transform:translateY(-100vh);opacity:0}
+
+.heart:hover{
+transform:scale(1.3);
 }
+
+/* COUNTDOWN */
+#countdown{
+display:none;
+font-size:80px;
+font-weight:bold;
+}
+
+/* SLIDES */
+#slides{
+display:none;
+flex-direction:column;
+align-items:center;
+gap:20px;
+max-width:90%;
+}
+
+#slides img{
+width:280px;
+height:380px;
+object-fit:cover;
+border-radius:20px;
+box-shadow:0 10px 30px rgba(0,0,0,0.4);
+}
+
+.message{
+font-size:18px;
+max-width:320px;
+}
+
+.nav{
+display:flex;
+gap:15px;
+}
+
+.hidden{display:none}
 </style>
 </head>
 
 <body>
 
-<div class="screen" id="lock">
-  <h2>ใส่รหัสผ่านเพื่อไปต่อนะไออ้วน ! 💖</h2>
-  <input type="password" id="passInput" placeholder="ใส่รหัส">
-  <button onclick="checkPassword()">ยืนยัน</button>
-  <p id="error" style="color:pink;"></p>
+<!-- PASSWORD -->
+<div id="lockScreen">
+<h2>ใส่รหัสวันเกิดเค้า 🎂</h2>
+<input type="password" id="pass" placeholder="รหัสคืออะไรนะ">
+<button onclick="checkPass()">เข้าเลย 💖</button>
+<p id="error"></p>
 </div>
 
-<div class="screen" id="intro">
-  <h2 id="typing"></h2>
+<!-- GAME -->
+<div id="game">
+<h2>กดหัวใจให้ครบ 5 ดวง ❤️</h2>
+<div id="hearts"></div>
+<p id="gameText"></p>
 </div>
 
-<div class="screen" id="game">
-  <h2>กดหัวใจให้ครบ 10 ดวงเพื่อไปต่อ 💗</h2>
-  <div id="heartArea"></div>
-  <p id="count">0 / 10</p>
+<!-- COUNTDOWN -->
+<div id="countdown"></div>
+
+<!-- SLIDES -->
+<div id="slides">
+<img id="slideImg" src="">
+<div class="message" id="slideText"></div>
+<div class="nav">
+<button onclick="prevSlide()">◀</button>
+<button onclick="nextSlide()">▶</button>
+</div>
 </div>
 
-<div class="screen" id="gallery">
-  <img id="photo">
-  <div class="text" id="message"></div>
-  <div id="progressBar"><div id="progress"></div></div>
-</div>
-
-<div class="screen" id="letter">
-  <h2>มีอะไรอยากจะบอกอ้วนนะ 💌</h2>
-  <p id="letterText"></p>
-  <button onclick="showEnd()">อ่านแล้ว</button>
-</div>
-
-<div class="screen" id="endScreen">
-  <h1>🎂 สุขสันต์วันเกิดนะคะน้องครีม มีความสุขมากมากกกกกกก 💖</h1>
-  <p>โดย อู๋ คนที่เป็นแฟนน้องครีมอ่ะ</p>
-</div>
-
-<audio id="bgm" src="music.mp3" loop></audio>
+<audio id="bgm" src="song.mp3"></audio>
 
 <script>
-const password="1103";
-let current=1;
-const total=20;
-let autoSlide;
-let isAnimating=false;
 
-const messages=[ /* ข้อความเดิมทั้งหมด */
-"รูปนี้คือรูปคู่รูปแรกๆของเราเลยย ชอบมากก",
-"ตั้งแต่มีน้องครีมเข้ามาในชีวิตเค้าสดใสขึ้นมากก",
-"น้องครีมทำให้โลกนี้สดใสขึ้น มากๆเลยนะ",
-"ขอบคุณที่น้องครีมเดินเข้ามาในชีวิตเค้า",
-"เค้ารักอ้วนของเค้ามากมากเลยยย",
-"รักรอยยิ้มของน้องครีมมากกกๆ",
-"อยู่ด้วยกันไปนานๆนะอ้วนนน",
-"ผ่านอะไรมาด้วยกันเยอะเลยย นี่ยังคบไม่ถึงปีนะเนี่ยย",
-"น้องครีมคือกำลังใจของเค้าา",
-"ปีนี้ขอให้น้องครีมมีแต่ความสุข",
-"เค้าจะอยู่ข้างๆน้องครีมเสมอ",
-"ขอบคุณที่อยู่รักเค้า ไม่ไปไหนจากเค้า",
-"เค้ารักน้องครีมมากกก ดกี่ครั้งก็ไม่เบื่อเลยค่ะ",
-"ขอบคุณเกิดมาให้เค้าได้รู้จัก",
-"ขอบคุณที่เป็นเพื่อน เป็นแฟน ที่ดีของเค้า",
-"เค้าโชคดีมากจริงๆ",
-"อยากสร้างความทรงจำกับน้องครีมไปอีกเยอะๆเลย",
-"สัญญาจะดูแลน้องครีม ไม่ปล่อยน้องครีมหลุดมือแน่ๆ",
-"รักน้องครีมมากกว่าคำพูดไหนๆ",
-"สุขสันต์วันเกิดนะน้องครีม ขอให้เป็นปีที่ดีของหนูนะคะ 🎉"
-];
+const PASSWORD = "1103";
+let heartCount = 0;
 
-function checkPassword(){
-  const input=document.getElementById("passInput").value;
-  if(input===password){
-    document.getElementById("lock").style.display="none";
-    document.getElementById("intro").style.display="flex";
-    typeText("ย้อนกลับไปวันแรกที่เราเจอกัน...");
-    document.getElementById("bgm").play();
-  }else{
-    document.getElementById("error").innerText="รหัสผิดนะ 😝";
-  }
+function checkPass(){
+const input = document.getElementById("pass").value;
+if(input === PASSWORD){
+document.getElementById("lockScreen").style.display="none";
+startGame();
+}else{
+document.getElementById("error").innerText="รหัสผิดนะะ 😝";
+}
 }
 
-function typeText(text){
-  let i=0;
-  const interval=setInterval(()=>{
-    document.getElementById("typing").innerText=text.substring(0,i);
-    i++;
-    if(i>text.length){
-      clearInterval(interval);
-      setTimeout(startCountdown,1500);
-    }
-  },80);
+function startGame(){
+document.getElementById("game").style.display="flex";
+const heartBox=document.getElementById("hearts");
+
+for(let i=0;i<5;i++){
+let h=document.createElement("span");
+h.innerHTML="❤️";
+h.className="heart";
+h.onclick=collectHeart;
+heartBox.appendChild(h);
+}
+}
+
+function collectHeart(e){
+e.target.style.visibility="hidden";
+heartCount++;
+if(heartCount===5){
+document.getElementById("game").style.display="none";
+startCountdown();
+}
 }
 
 function startCountdown(){
-  document.getElementById("intro").style.display="none";
-  const countdown=document.createElement("div");
-  countdown.className="screen";
-  countdown.style.fontSize="60px";
-  countdown.style.fontWeight="bold";
-  document.body.appendChild(countdown);
+let count=3;
+const cd=document.getElementById("countdown");
+cd.style.display="block";
+cd.innerText=count;
 
-  let num=3;
-  countdown.innerText=num;
-
-  const timer=setInterval(()=>{
-    num--;
-    if(num===0){
-      clearInterval(timer);
-      countdown.remove();
-      startGame();
-    }else{
-      countdown.innerText=num;
-    }
-  },1000);
-}
-
-let heartCount=0;
-function startGame(){
-  document.getElementById("game").style.display="flex";
-  const area=document.getElementById("heartArea");
-  for(let i=0;i<10;i++){
-    const h=document.createElement("span");
-    h.innerHTML="💗";
-    h.style.fontSize="40px";
-    h.style.cursor="pointer";
-    h.style.margin="10px";
-    h.onclick=function(){
-      this.remove();
-      heartCount++;
-      document.getElementById("count").innerText=heartCount+" / 10";
-      if(heartCount===10) openGallery();
-    }
-    area.appendChild(h);
-  }
-}
-
-function openGallery(){
-  document.getElementById("game").style.display="none";
-  document.getElementById("gallery").style.display="flex";
-  createStars();
-  shootingStar();
-  floatingHearts();
-  showImage(current);
-  autoSlide=setInterval(nextImage,6000);
-}
-
-function showImage(index){
-  if(isAnimating) return;
-  isAnimating=true;
-
-  const img=document.getElementById("photo");
-  const message=document.getElementById("message");
-
-  img.classList.add("fade-out");
-  message.style.opacity=0;
-
-  const newImg=new Image();
-  newImg.src=index+".jpg";
-  newImg.onload=function(){
-    setTimeout(()=>{
-      img.src=newImg.src;
-      message.innerText=messages[index-1];
-      document.getElementById("progress").style.width=(index/total*100)+"%";
-      img.classList.remove("fade-out");
-      img.classList.add("fade-in");
-      message.style.opacity=1;
-      isAnimating=false;
-    },800);
-  }
-}
-
-function nextImage(){
-  current++;
-  if(current>total){
-    clearInterval(autoSlide);
-    document.getElementById("gallery").style.display="none";
-    document.getElementById("letter").style.display="flex";
-    typeLetter();
-    return;
-  }
-  showImage(current);
-}
-
-document.getElementById("gallery").addEventListener("click",function(){
-  clearInterval(autoSlide);
-  nextImage();
-  autoSlide=setInterval(nextImage,6000);
-});
-
-function typeLetter(){
-const text=`ขอบคุณที่น้องครีมคอยอยู่เคียงข้างกันมาตลอด
-ปีนี้อาจจะมีเรื่องให้เราเหนื่อยบ้าง เครียดบ้าง
-มีหลายๆครั้งที่เราทะเลาะกัน
-แต่ใจเค้าไม่เคยรักน้องครีมน้อยลงหรือคิดอยากจะไปจากน้องครีมเลย 
-เค้าจะอยู่ตรงนี้แหละ
-เค้าชอบที่ที่มีอ้วน ไม่ว่าจะที่ไหนแค่มีอ้วน เค้าก็มีความสุข 💖`;
-
-let i=0;
-const target=document.getElementById("letterText");
 const interval=setInterval(()=>{
-target.innerHTML=text.substring(0,i).replace(/\n/g,"<br>");
-i++;
-if(i>text.length) clearInterval(interval);
-},40);
+count--;
+if(count>0){
+cd.innerText=count;
+}else{
+cd.innerText="🎉";
+clearInterval(interval);
+setTimeout(()=>{
+cd.style.display="none";
+startSlides();
+document.getElementById("bgm").play();
+},1000);
+}
+},1000);
 }
 
-function showEnd(){
-  document.getElementById("letter").style.display="none";
-  document.getElementById("endScreen").style.display="flex";
-  confetti();
+/* SLIDE DATA */
+const slides=[
+{img:"1.jpg",text:"สุขสันต์วันเกิดนะคนเก่งของเค้า 💖"},
+{img:"2.jpg",text:"ขอบคุณที่อยู่ข้างกันเสมอ"},
+{img:"3.jpg",text:"ปีนี้ขอให้มีแต่รอยยิ้ม"},
+{img:"4.jpg",text:"ขอให้เธอมีความสุขที่สุด"},
+{img:"5.jpg",text:"อยู่กับเค้าไปนานๆนะ"},
+{img:"6.jpg",text:"ทุกช่วงเวลาที่มีเธอมันมีค่ามาก"},
+{img:"7.jpg",text:"เธอคือของขวัญที่ดีที่สุด"},
+{img:"8.jpg",text:"รักเธอมากกว่าที่พูดได้"},
+{img:"9.jpg",text:"ไม่ว่าจะวันไหนก็เลือกเธอ"},
+{img:"10.jpg",text:"ขอบคุณที่เข้ามาในชีวิต"},
+{img:"11.jpg",text:"เธอทำให้โลกของเค้าสดใส"},
+{img:"12.jpg",text:"ขอให้ปีนี้ปังๆ"},
+{img:"13.jpg",text:"ขอให้ฝันทุกอย่างเป็นจริง"},
+{img:"14.jpg",text:"เธอเก่งมากแล้วนะ"},
+{img:"15.jpg",text:"เค้าภูมิใจในตัวเธอเสมอ"},
+{img:"16.jpg",text:"ไม่ว่าจะเกิดอะไรขึ้น เค้าจะอยู่ตรงนี้"},
+{img:"17.jpg",text:"จับมือกันแบบนี้ไปเรื่อยๆ"},
+{img:"18.jpg",text:"เธอคือความโชคดีที่สุดของเค้า"},
+{img:"19.jpg",text:"รักเธอมากขึ้นทุกวัน"},
+{img:"20.jpg",text:"Happy Birthday My Love 🎂❤️"}
+];
+
+let current=0;
+
+function startSlides(){
+document.getElementById("slides").style.display="flex";
+showSlide();
 }
 
-function createStars(){
-  for(let i=0;i<80;i++){
-    const s=document.createElement("div");
-    s.className="star";
-    s.style.top=Math.random()*100+"%";
-    s.style.left=Math.random()*100+"%";
-    document.body.appendChild(s);
-  }
+function showSlide(){
+document.getElementById("slideImg").src=slides[current].img;
+document.getElementById("slideText").innerText=slides[current].text;
 }
 
-function shootingStar(){
-  setInterval(()=>{
-    const star=document.createElement("div");
-    star.style.position="absolute";
-    star.style.width="3px";
-    star.style.height="3px";
-    star.style.background="white";
-    star.style.top=Math.random()*50+"%";
-    star.style.left="-10px";
-    star.style.boxShadow="0 0 10px white";
-    star.style.transition="all 1s linear";
-    document.body.appendChild(star);
-    setTimeout(()=>{
-      star.style.left="110%";
-      star.style.top=Math.random()*80+"%";
-    },50);
-    setTimeout(()=>star.remove(),1200);
-  },4000);
+function nextSlide(){
+if(current<slides.length-1){
+current++;
+showSlide();
+}
 }
 
-function floatingHearts(){
-  setInterval(()=>{
-    const heart=document.createElement("div");
-    heart.className="heart";
-    heart.innerHTML="💖";
-    heart.style.left=Math.random()*100+"%";
-    heart.style.fontSize=(20+Math.random()*20)+"px";
-    document.body.appendChild(heart);
-    setTimeout(()=>heart.remove(),4000);
-  },600);
+function prevSlide(){
+if(current>0){
+current--;
+showSlide();
+}
 }
 
-function confetti(){
-  for(let i=0;i<120;i++){
-    const c=document.createElement("div");
-    c.style.position="absolute";
-    c.style.width="6px";
-    c.style.height="6px";
-    c.style.background="hsl("+Math.random()*360+",100%,50%)";
-    c.style.top="-10px";
-    c.style.left=Math.random()*100+"%";
-    c.style.transition="all 2s linear";
-    document.body.appendChild(c);
-    setTimeout(()=>{c.style.top="110%";},50);
-    setTimeout(()=>c.remove(),2000);
-  }
-}
 </script>
-
 </body>
 </html>
