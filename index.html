@@ -47,20 +47,41 @@ img{
   max-height:60vh;
   border-radius:20px;
   box-shadow:0 0 30px pink;
-  opacity:0;
-  transition:opacity .8s;
+  transition:opacity 1s ease-in-out, transform 1s ease-in-out;
 }
+.fade-out{opacity:0; transform:scale(.97);}
+.fade-in{opacity:1; transform:scale(1);}
+
 .text{
   margin-top:15px;
   font-size:18px;
   max-width:600px;
+  transition:opacity 1s;
 }
+
+#progressBar{
+  width:80%;
+  height:6px;
+  background:#333;
+  border-radius:10px;
+  margin-top:10px;
+}
+#progress{
+  height:100%;
+  width:0;
+  background:pink;
+  border-radius:10px;
+  transition:width .5s;
+}
+
 .star{
   position:absolute;
   width:2px;
   height:2px;
   background:white;
+  opacity:.8;
 }
+
 .heart{
   position:absolute;
   color:pink;
@@ -75,7 +96,6 @@ img{
 
 <body>
 
-<!-- LOCK -->
 <div class="screen" id="lock">
   <h2>ใส่รหัสผ่านเพื่อไปต่อนะไออ้วน ! 💖</h2>
   <input type="password" id="passInput" placeholder="ใส่รหัส">
@@ -83,53 +103,43 @@ img{
   <p id="error" style="color:pink;"></p>
 </div>
 
-<!-- INTRO -->
 <div class="screen" id="intro">
   <h2 id="typing"></h2>
 </div>
 
-<!-- GAME -->
 <div class="screen" id="game">
   <h2>กดหัวใจให้ครบ 10 ดวงเพื่อไปต่อ 💗</h2>
   <div id="heartArea"></div>
   <p id="count">0 / 10</p>
 </div>
 
-<!-- GALLERY -->
 <div class="screen" id="gallery">
   <img id="photo">
   <div class="text" id="message"></div>
+  <div id="progressBar"><div id="progress"></div></div>
 </div>
 
-<!-- LETTER -->
 <div class="screen" id="letter">
   <h2>มีอะไรอยากจะบอกอ้วนนะ 💌</h2>
-  <p>
-  ขอบคุณที่น้องครีมคอยอยู่เคียงข้างกันมาตลอด<br>
-  ปีนี้อาจจะมีเรื่องให้เราเหนื่อยบ้าง เครียดบ้าง<br>
-  มีหลายๆครั้งที่เราทะเลาะกัน<br>
-  แต่ใจเค้าไม่เคยรักน้องครีมน้อยลงหรือคิดอยากจะไปจากน้องครีมเลย <br>
-  เค้าจะอยู่ตรงนี้แหละ<br>
-  เค้าชอบที่ที่มีอ้วน ไม่ว่าจะที่ไหนแค่มีอ้วน เค้าก็มีความสุข 💖
-  </p>
+  <p id="letterText"></p>
   <button onclick="showEnd()">อ่านแล้ว</button>
 </div>
 
-<!-- END -->
 <div class="screen" id="endScreen">
   <h1>🎂 สุขสันต์วันเกิดนะคะน้องครีม มีความสุขมากมากกกกกกก 💖</h1>
   <p>โดย อู๋ คนที่เป็นแฟนน้องครีมอ่ะ</p>
 </div>
 
-<audio id="bgm" src="music.mp3"></audio>
+<audio id="bgm" src="music.mp3" loop></audio>
 
 <script>
 const password="1103";
 let current=1;
 const total=20;
 let autoSlide;
+let isAnimating=false;
 
-const messages=[
+const messages=[ /* ข้อความเดิมทั้งหมด */
 "รูปนี้คือรูปคู่รูปแรกๆของเราเลยย ชอบมากก",
 "ตั้งแต่มีน้องครีมเข้ามาในชีวิตเค้าสดใสขึ้นมากก",
 "น้องครีมทำให้โลกนี้สดใสขึ้น มากๆเลยนะ",
@@ -171,14 +181,36 @@ function typeText(text){
     i++;
     if(i>text.length){
       clearInterval(interval);
-      setTimeout(startGame,1500);
+      setTimeout(startCountdown,1500);
     }
   },80);
 }
 
+function startCountdown(){
+  document.getElementById("intro").style.display="none";
+  const countdown=document.createElement("div");
+  countdown.className="screen";
+  countdown.style.fontSize="60px";
+  countdown.style.fontWeight="bold";
+  document.body.appendChild(countdown);
+
+  let num=3;
+  countdown.innerText=num;
+
+  const timer=setInterval(()=>{
+    num--;
+    if(num===0){
+      clearInterval(timer);
+      countdown.remove();
+      startGame();
+    }else{
+      countdown.innerText=num;
+    }
+  },1000);
+}
+
 let heartCount=0;
 function startGame(){
-  document.getElementById("intro").style.display="none";
   document.getElementById("game").style.display="flex";
   const area=document.getElementById("heartArea");
   for(let i=0;i<10;i++){
@@ -191,45 +223,86 @@ function startGame(){
       this.remove();
       heartCount++;
       document.getElementById("count").innerText=heartCount+" / 10";
-      if(heartCount===10) startGallery();
+      if(heartCount===10) openGallery();
     }
     area.appendChild(h);
   }
 }
 
-function startGallery(){
+function openGallery(){
   document.getElementById("game").style.display="none";
   document.getElementById("gallery").style.display="flex";
-  show();
-  autoSlide=setInterval(next,5000);
   createStars();
+  shootingStar();
   floatingHearts();
+  showImage(current);
+  autoSlide=setInterval(nextImage,6000);
 }
 
-function show(){
+function showImage(index){
+  if(isAnimating) return;
+  isAnimating=true;
+
   const img=document.getElementById("photo");
-  img.style.opacity=0;
-  setTimeout(()=>{
-    img.src=current+".jpg";
-    document.getElementById("message").innerText=messages[current-1];
-    img.style.opacity=1;
-  },400);
+  const message=document.getElementById("message");
+
+  img.classList.add("fade-out");
+  message.style.opacity=0;
+
+  const newImg=new Image();
+  newImg.src=index+".jpg";
+  newImg.onload=function(){
+    setTimeout(()=>{
+      img.src=newImg.src;
+      message.innerText=messages[index-1];
+      document.getElementById("progress").style.width=(index/total*100)+"%";
+      img.classList.remove("fade-out");
+      img.classList.add("fade-in");
+      message.style.opacity=1;
+      isAnimating=false;
+    },800);
+  }
 }
 
-function next(){
+function nextImage(){
   current++;
   if(current>total){
     clearInterval(autoSlide);
     document.getElementById("gallery").style.display="none";
     document.getElementById("letter").style.display="flex";
+    typeLetter();
     return;
   }
-  show();
+  showImage(current);
+}
+
+document.getElementById("gallery").addEventListener("click",function(){
+  clearInterval(autoSlide);
+  nextImage();
+  autoSlide=setInterval(nextImage,6000);
+});
+
+function typeLetter(){
+const text=`ขอบคุณที่น้องครีมคอยอยู่เคียงข้างกันมาตลอด
+ปีนี้อาจจะมีเรื่องให้เราเหนื่อยบ้าง เครียดบ้าง
+มีหลายๆครั้งที่เราทะเลาะกัน
+แต่ใจเค้าไม่เคยรักน้องครีมน้อยลงหรือคิดอยากจะไปจากน้องครีมเลย 
+เค้าจะอยู่ตรงนี้แหละ
+เค้าชอบที่ที่มีอ้วน ไม่ว่าจะที่ไหนแค่มีอ้วน เค้าก็มีความสุข 💖`;
+
+let i=0;
+const target=document.getElementById("letterText");
+const interval=setInterval(()=>{
+target.innerHTML=text.substring(0,i).replace(/\n/g,"<br>");
+i++;
+if(i>text.length) clearInterval(interval);
+},40);
 }
 
 function showEnd(){
   document.getElementById("letter").style.display="none";
   document.getElementById("endScreen").style.display="flex";
+  confetti();
 }
 
 function createStars(){
@@ -242,6 +315,26 @@ function createStars(){
   }
 }
 
+function shootingStar(){
+  setInterval(()=>{
+    const star=document.createElement("div");
+    star.style.position="absolute";
+    star.style.width="3px";
+    star.style.height="3px";
+    star.style.background="white";
+    star.style.top=Math.random()*50+"%";
+    star.style.left="-10px";
+    star.style.boxShadow="0 0 10px white";
+    star.style.transition="all 1s linear";
+    document.body.appendChild(star);
+    setTimeout(()=>{
+      star.style.left="110%";
+      star.style.top=Math.random()*80+"%";
+    },50);
+    setTimeout(()=>star.remove(),1200);
+  },4000);
+}
+
 function floatingHearts(){
   setInterval(()=>{
     const heart=document.createElement("div");
@@ -252,6 +345,22 @@ function floatingHearts(){
     document.body.appendChild(heart);
     setTimeout(()=>heart.remove(),4000);
   },600);
+}
+
+function confetti(){
+  for(let i=0;i<120;i++){
+    const c=document.createElement("div");
+    c.style.position="absolute";
+    c.style.width="6px";
+    c.style.height="6px";
+    c.style.background="hsl("+Math.random()*360+",100%,50%)";
+    c.style.top="-10px";
+    c.style.left=Math.random()*100+"%";
+    c.style.transition="all 2s linear";
+    document.body.appendChild(c);
+    setTimeout(()=>{c.style.top="110%";},50);
+    setTimeout(()=>c.remove(),2000);
+  }
 }
 </script>
 
