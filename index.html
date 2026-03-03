@@ -3,301 +3,257 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Happy Birthday My Love 🎂</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;700&display=swap" rel="stylesheet">
+<title>For Cream 💖</title>
 
 <style>
+*{box-sizing:border-box}
 body{
-margin:0;
-font-family:'Mali',cursive;
-background:linear-gradient(to bottom,#ffd6ec,#ffc2e2);
-overflow-x:hidden;
-color:#ff4da6;
-text-align:center;
+  margin:0;
+  background:black;
+  color:white;
+  font-family:sans-serif;
+  text-align:center;
+  overflow:hidden;
 }
+.screen{
+  position:absolute;
+  inset:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  padding:20px;
+}
+input{
+  padding:12px;
+  font-size:18px;
+  border-radius:12px;
+  border:none;
+  text-align:center;
+}
+button{
+  margin-top:15px;
+  padding:10px 25px;
+  font-size:16px;
+  border:none;
+  border-radius:25px;
+  background:pink;
+  cursor:pointer;
+}
+#intro,#game,#gallery,#letter,#endScreen{display:none}
 
-/* เมนู */
-nav{
-padding:15px;
+img{
+  max-width:90%;
+  max-height:60vh;
+  border-radius:20px;
+  box-shadow:0 0 30px pink;
+  opacity:0;
+  transition:opacity .8s;
 }
-nav button{
-background:white;
-border:none;
-padding:8px 14px;
-margin:5px;
-border-radius:20px;
-cursor:pointer;
-font-family:'Mali';
+.text{
+  margin-top:15px;
+  font-size:18px;
+  max-width:600px;
 }
-
-/* หน้า */
-.section{
-display:none;
-padding:20px;
-}
-.active{
-display:block;
-}
-
-/* กระต่าย */
-.rabbit{
-position:fixed;
-bottom:10px;
-left:-100px;
-font-size:40px;
-animation:rabbitRun 18s linear infinite;
-}
-@keyframes rabbitRun{
-from{left:-100px;}
-to{left:110%;}
-}
-
-/* ดาว */
 .star{
-position:fixed;
-animation:twinkle 1.5s infinite alternate;
-font-size:14px;
+  position:absolute;
+  width:2px;
+  height:2px;
+  background:white;
 }
-@keyframes twinkle{
-from{opacity:0.2;}
-to{opacity:1;}
+.heart{
+  position:absolute;
+  color:pink;
+  animation:float 4s linear forwards;
 }
-
-/* กลีบดอกไม้ */
-.petal{
-position:fixed;
-top:-10px;
-animation:fall linear infinite;
-}
-@keyframes fall{
-to{transform:translateY(110vh) rotate(360deg);}
-}
-
-/* Memories */
-.memory{
-margin:30px 0;
-}
-.memory img{
-width:100%;
-max-width:350px;
-border-radius:20px;
-box-shadow:0 5px 15px rgba(0,0,0,0.2);
-}
-
-/* สไลด์ */
-#slider img{
-width:100%;
-max-width:350px;
-border-radius:20px;
-}
-
-/* เกม */
-#heartGame{
-font-size:45px;
-cursor:pointer;
-}
-
-/* ของขวัญ */
-.gift{
-font-size:65px;
-cursor:pointer;
-}
-
-canvas{
-position:fixed;
-top:0;
-left:0;
-pointer-events:none;
-}
-
-@media(max-width:600px){
-h1{font-size:22px;}
+@keyframes float{
+  from{transform:translateY(0);opacity:1}
+  to{transform:translateY(-100vh);opacity:0}
 }
 </style>
 </head>
+
 <body>
 
-<canvas id="firework"></canvas>
-<div class="rabbit">🐰</div>
-
-<nav>
-<button onclick="show('home')">หน้าแรก</button>
-<button onclick="show('memories')">ความทรงจำ</button>
-<button onclick="show('game')">เกม</button>
-<button onclick="show('gift')">ของขวัญ</button>
-<button onclick="show('secret')">ข้อความลับ</button>
-</nav>
-
-<!-- หน้าแรก -->
-<div id="home" class="section active">
-<h1>สุขสันต์วันเกิดนะคี 💖</h1>
-<p>เธอคือความสุขที่สุดของเรา</p>
-
-<button onclick="playMusic()">🎵 เปิดเพลง</button>
-
-<h3>พิมพ์ชื่อเธอ 💞</h3>
-<input id="nameInput" placeholder="พิมพ์ชื่อ">
-<button onclick="heartRain()">ตกหัวใจ</button>
-
-<h3>เราคบกันมาแล้ว</h3>
-<p id="countDate"></p>
-
-<h3>รูปสไลด์</h3>
-<div id="slider">
-<img id="slideImg" src="https://via.placeholder.com/350x400?text=Slide+1">
+<!-- LOCK -->
+<div class="screen" id="lock">
+  <h2>ใส่รหัสผ่านเพื่อไปต่อนะไออ้วน ! 💖</h2>
+  <input type="password" id="passInput" placeholder="ใส่รหัส">
+  <button onclick="checkPassword()">ยืนยัน</button>
+  <p id="error" style="color:pink;"></p>
 </div>
 
-<button onclick="firework()">🎆 จุดพลุ</button>
+<!-- INTRO -->
+<div class="screen" id="intro">
+  <h2 id="typing"></h2>
 </div>
 
-<!-- Memories -->
-<div id="memories" class="section">
-<h1>20 ความทรงจำของเรา</h1>
-<script>
-for(let i=1;i<=20;i++){
-document.write(`
-<div class="memory">
-<img src="https://via.placeholder.com/350x400.png?text=Memory+${i}">
-<p>รูปที่ ${i} — ทุกครั้งที่มองภาพนี้ เราจะนึกถึงรอยยิ้ม เสียงหัวเราะ และความอบอุ่นที่เธอให้เรา ช่วงเวลาธรรมดาเหล่านี้กลับกลายเป็นความทรงจำที่มีค่าที่สุดในชีวิตเรา</p>
-</div>
-`);
-}
-</script>
+<!-- GAME -->
+<div class="screen" id="game">
+  <h2>กดหัวใจให้ครบ 10 ดวงเพื่อไปต่อ 💗</h2>
+  <div id="heartArea"></div>
+  <p id="count">0 / 10</p>
 </div>
 
-<!-- เกม -->
-<div id="game" class="section">
-<h1>เกมกดหัวใจ 💗</h1>
-<p>กดให้ได้ 20 ครั้ง</p>
-<div id="heartGame">💖</div>
-<p id="score">0</p>
+<!-- GALLERY -->
+<div class="screen" id="gallery">
+  <img id="photo">
+  <div class="text" id="message"></div>
 </div>
 
-<!-- ของขวัญ -->
-<div id="gift" class="section">
-<h1>ของขวัญ 🎁</h1>
-<div class="gift" onclick="openGift()">🎁</div>
-<p id="giftText"></p>
+<!-- LETTER -->
+<div class="screen" id="letter">
+  <h2>มีอะไรอยากจะบอกอ้วนนะ 💌</h2>
+  <p>
+  ขอบคุณที่น้องครีมคอยอยู่เคียงข้างกันมาตลอด<br>
+  ปีนี้อาจจะมีเรื่องให้เราเหนื่อยบ้าง เครียดบ้าง<br>
+  มีหลายๆครั้งที่เราทะเลาะกัน<br>
+  แต่ใจเค้าไม่เคยรักน้องครีมน้อยลงหรือคิดอยากจะไปจากน้องครีมเลย <br>
+  เค้าจะอยู่ตรงนี้แหละ<br>
+  เค้าชอบที่ที่มีอ้วน ไม่ว่าจะที่ไหนแค่มีอ้วน เค้าก็มีความสุข 💖
+  </p>
+  <button onclick="showEnd()">อ่านแล้ว</button>
 </div>
 
-<!-- รหัส -->
-<div id="secret" class="section">
-<h1>ใส่รหัส 💌</h1>
-<input type="password" id="codeInput">
-<button onclick="checkCode()">เปิด</button>
-<p id="secretText"></p>
+<!-- END -->
+<div class="screen" id="endScreen">
+  <h1>🎂 สุขสันต์วันเกิดนะคะน้องครีม มีความสุขมากมากกกกกกก 💖</h1>
+  <p>โดย อู๋ คนที่เป็นแฟนน้องครีมอ่ะ</p>
 </div>
 
-<audio id="bgMusic" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+<audio id="bgm" src="music.mp3"></audio>
 
 <script>
+const password="1103";
+let current=1;
+const total=20;
+let autoSlide;
 
-/* เปลี่ยนหน้า */
-function show(id){
-document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-document.getElementById(id).classList.add('active');
-}
-
-/* เพลง */
-function playMusic(){
-document.getElementById('bgMusic').play();
-}
-
-/* ดาว */
-for(let i=0;i<40;i++){
-let s=document.createElement('div');
-s.className='star';
-s.innerHTML='✨';
-s.style.top=Math.random()*100+'vh';
-s.style.left=Math.random()*100+'vw';
-document.body.appendChild(s);
-}
-
-/* กลีบดอกไม้ */
-for(let i=0;i<30;i++){
-let p=document.createElement('div');
-p.className='petal';
-p.innerHTML='🌸';
-p.style.left=Math.random()*100+'vw';
-p.style.animationDuration=5+Math.random()*5+'s';
-document.body.appendChild(p);
-}
-
-/* เกม */
-let score=0;
-document.getElementById('heartGame').onclick=function(){
-score++;
-document.getElementById('score').innerText=score;
-if(score==20){
-alert("เธอชนะแล้ว 💕 เรารักเธอ!");
-}
-}
-
-/* ของขวัญ */
-function openGift(){
-document.getElementById('giftText').innerText="ของขวัญของเธอคือ… เราจะอยู่ข้างๆเธอทุกวัน 💖";
-}
-
-/* รหัส */
-function checkCode(){
-let code=document.getElementById('codeInput').value;
-if(code==="1103"){
-document.getElementById('secretText').innerText="เรารักเธอมากที่สุดในโลก 💌";
-}else{
-document.getElementById('secretText').innerText="รหัสผิดนะ 😝";
-}
-}
-
-/* หัวใจตก */
-function heartRain(){
-let name=document.getElementById('nameInput').value;
-for(let i=0;i<30;i++){
-let h=document.createElement('div');
-h.innerHTML="💖 "+name;
-h.style.position="fixed";
-h.style.left=Math.random()*100+"vw";
-h.style.top="-20px";
-h.style.animation="fall 5s linear";
-document.body.appendChild(h);
-setTimeout(()=>h.remove(),5000);
-}
-}
-
-/* นับวันครบรอบ (แก้วันที่เองได้) */
-let startDate=new Date("2024-03-11");
-let today=new Date();
-let diff=Math.floor((today-startDate)/(1000*60*60*24));
-document.getElementById("countDate").innerText=diff+" วันแล้ว 💞";
-
-/* สไลด์ */
-let slides=[
-"https://via.placeholder.com/350x400?text=Slide+1",
-"https://via.placeholder.com/350x400?text=Slide+2",
-"https://via.placeholder.com/350x400?text=Slide+3"
+const messages=[
+"รูปนี้คือรูปคู่รูปแรกๆของเราเลยย ชอบมากก",
+"ตั้งแต่มีน้องครีมเข้ามาในชีวิตเค้าสดใสขึ้นมากก",
+"น้องครีมทำให้โลกนี้สดใสขึ้น มากๆเลยนะ",
+"ขอบคุณที่น้องครีมเดินเข้ามาในชีวิตเค้า",
+"เค้ารักอ้วนของเค้ามากมากเลยยย",
+"รักรอยยิ้มของน้องครีมมากกกๆ",
+"อยู่ด้วยกันไปนานๆนะอ้วนนน",
+"ผ่านอะไรมาด้วยกันเยอะเลยย นี่ยังคบไม่ถึงปีนะเนี่ยย",
+"น้องครีมคือกำลังใจของเค้าา",
+"ปีนี้ขอให้น้องครีมมีแต่ความสุข",
+"เค้าจะอยู่ข้างๆน้องครีมเสมอ",
+"ขอบคุณที่อยู่รักเค้า ไม่ไปไหนจากเค้า",
+"เค้ารักน้องครีมมากกก ดกี่ครั้งก็ไม่เบื่อเลยค่ะ",
+"ขอบคุณเกิดมาให้เค้าได้รู้จัก",
+"ขอบคุณที่เป็นเพื่อน เป็นแฟน ที่ดีของเค้า",
+"เค้าโชคดีมากจริงๆ",
+"อยากสร้างความทรงจำกับน้องครีมไปอีกเยอะๆเลย",
+"สัญญาจะดูแลน้องครีม ไม่ปล่อยน้องครีมหลุดมือแน่ๆ",
+"รักน้องครีมมากกว่าคำพูดไหนๆ",
+"สุขสันต์วันเกิดนะน้องครีม ขอให้เป็นปีที่ดีของหนูนะคะ 🎉"
 ];
-let index=0;
-setInterval(()=>{
-index=(index+1)%slides.length;
-document.getElementById("slideImg").src=slides[index];
-},3000);
 
-/* พลุ */
-let canvas=document.getElementById("firework");
-let ctx=canvas.getContext("2d");
-canvas.width=window.innerWidth;
-canvas.height=window.innerHeight;
-
-function firework(){
-for(let i=0;i<100;i++){
-ctx.fillStyle="hsl("+Math.random()*360+",100%,50%)";
-ctx.beginPath();
-ctx.arc(Math.random()*canvas.width,Math.random()*canvas.height,3,0,Math.PI*2);
-ctx.fill();
-}
-setTimeout(()=>ctx.clearRect(0,0,canvas.width,canvas.height),1000);
+function checkPassword(){
+  const input=document.getElementById("passInput").value;
+  if(input===password){
+    document.getElementById("lock").style.display="none";
+    document.getElementById("intro").style.display="flex";
+    typeText("ย้อนกลับไปวันแรกที่เราเจอกัน...");
+    document.getElementById("bgm").play();
+  }else{
+    document.getElementById("error").innerText="รหัสผิดนะ 😝";
+  }
 }
 
+function typeText(text){
+  let i=0;
+  const interval=setInterval(()=>{
+    document.getElementById("typing").innerText=text.substring(0,i);
+    i++;
+    if(i>text.length){
+      clearInterval(interval);
+      setTimeout(startGame,1500);
+    }
+  },80);
+}
+
+let heartCount=0;
+function startGame(){
+  document.getElementById("intro").style.display="none";
+  document.getElementById("game").style.display="flex";
+  const area=document.getElementById("heartArea");
+  for(let i=0;i<10;i++){
+    const h=document.createElement("span");
+    h.innerHTML="💗";
+    h.style.fontSize="40px";
+    h.style.cursor="pointer";
+    h.style.margin="10px";
+    h.onclick=function(){
+      this.remove();
+      heartCount++;
+      document.getElementById("count").innerText=heartCount+" / 10";
+      if(heartCount===10) startGallery();
+    }
+    area.appendChild(h);
+  }
+}
+
+function startGallery(){
+  document.getElementById("game").style.display="none";
+  document.getElementById("gallery").style.display="flex";
+  show();
+  autoSlide=setInterval(next,5000);
+  createStars();
+  floatingHearts();
+}
+
+function show(){
+  const img=document.getElementById("photo");
+  img.style.opacity=0;
+  setTimeout(()=>{
+    img.src=current+".jpg";
+    document.getElementById("message").innerText=messages[current-1];
+    img.style.opacity=1;
+  },400);
+}
+
+function next(){
+  current++;
+  if(current>total){
+    clearInterval(autoSlide);
+    document.getElementById("gallery").style.display="none";
+    document.getElementById("letter").style.display="flex";
+    return;
+  }
+  show();
+}
+
+function showEnd(){
+  document.getElementById("letter").style.display="none";
+  document.getElementById("endScreen").style.display="flex";
+}
+
+function createStars(){
+  for(let i=0;i<80;i++){
+    const s=document.createElement("div");
+    s.className="star";
+    s.style.top=Math.random()*100+"%";
+    s.style.left=Math.random()*100+"%";
+    document.body.appendChild(s);
+  }
+}
+
+function floatingHearts(){
+  setInterval(()=>{
+    const heart=document.createElement("div");
+    heart.className="heart";
+    heart.innerHTML="💖";
+    heart.style.left=Math.random()*100+"%";
+    heart.style.fontSize=(20+Math.random()*20)+"px";
+    document.body.appendChild(heart);
+    setTimeout(()=>heart.remove(),4000);
+  },600);
+}
 </script>
+
 </body>
 </html>
